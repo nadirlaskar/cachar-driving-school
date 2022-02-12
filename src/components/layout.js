@@ -11,8 +11,14 @@ import { useStaticQuery, graphql } from "gatsby"
 
 import Header from "./header"
 import "./layout.css"
+import theme from "../theme"
+import ThemeTopLayout from "gatsby-theme-material-ui-top-layout/src/components/top-layout"
 
-const Layout = ({ children }) => {
+import Box from "@mui/material/Box"
+import Container from "@mui/material/Container"
+import { Toolbar } from "@mui/material"
+
+const Layout = ({ showApplyNow, ...props }) => {
   const data = useStaticQuery(graphql`
     query SiteTitleQuery {
       site {
@@ -24,17 +30,16 @@ const Layout = ({ children }) => {
   `)
 
   return (
-    <>
-      <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
-      <div
-        style={{
-          textAlign: "center",
-          margin: `0 auto`,
-          maxWidth: 960,
-          padding: `0 1.0875rem 1.45rem`
-        }}
-      >
-        <main>{children}</main>
+    <ThemeTopLayout theme={theme}>
+      <Header
+        showApplyNow={showApplyNow}
+        siteTitle={data.site.siteMetadata?.title || `Title`}
+      />
+      <Toolbar />
+      <Container>
+        <Box sx={{ my: 2 }}>
+          <main>{props.children}</main>
+        </Box>
         <footer
           style={{
             marginTop: `2rem`
@@ -59,8 +64,8 @@ const Layout = ({ children }) => {
             </a>
           </div>
         </footer>
-      </div>
-    </>
+      </Container>
+    </ThemeTopLayout>
   )
 }
 
