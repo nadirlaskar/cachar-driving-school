@@ -285,6 +285,7 @@ const CourseList = ({ list, onSelect = () => { }, selectedCourse, showPaymentMod
   const handleClose = () => {
     setOpen(false);
   };
+  const upiDisabled = true;
   return (
     <Stack direction={matches ? "column" : "row"} spacing={2}>
       {list.map(({ title, id, subtitle, features, courseDuration, price }) => (
@@ -314,11 +315,11 @@ const CourseList = ({ list, onSelect = () => { }, selectedCourse, showPaymentMod
             </Typography>
             {showPaymentModes && (
               <Box flexDirection={'row'}>
-                <Link href={`upi://pay?pa=nadirlaskar@icici&amp;pn=CDS&amp;am=${price.replace(/[^.\d]/g, '')}&amp;cu=INR`}>
+                {!upiDisabled&&<Link href={`upi://pay?pa=nadirlaskar@icici&amp;pn=CDS&amp;am=${price.replace(/[^.\d]/g, '')}&amp;cu=INR`}>
                   <Typography sx={{my:1}} variant="caption" component={"div"} color="primary">
                    Pay using UPI (works on phone)
                   </Typography>
-                </Link>
+                </Link>}
                 <Link href="#" onClick={handleClickOpen}>
                   <Typography variant="caption" component={"div"}>
                     Show bank details
