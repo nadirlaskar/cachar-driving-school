@@ -766,7 +766,9 @@ const AddressPage = () => {
     ),
     payment: (
       <Box flexDirection={"column"}>
-        <Typography sx={{mb:1}} variant="subtitle1">You have selected below course</Typography>
+        <Typography sx={{ mb: 1 }} variant="subtitle1">
+          {!Boolean(course) ? "Please select a course to make payment" : "Your selected course"}
+        </Typography>
         <CourseList
           showPaymentModes={true}
           list={COURSES.filter(x => x.id === course)}
@@ -808,12 +810,13 @@ const AddressPage = () => {
                   </CardActions>
                 </Card>
               ) : (
-                <Upload type="drag" onStart={field.onChange} accept={filetypes}>
-                  <Button
-                    startIcon={<UploadFile />}
-                    variant="contained"
-                    component="span"
-                  >
+                  <Upload type="drag" onStart={field.onChange} accept={filetypes} disabled={!Boolean(course)}>
+                    <Button
+                      disabled={!Boolean(course)}
+                      startIcon={<UploadFile />}
+                      variant="contained"
+                      component="span"
+                    >
                     Upload Payment Receipt
                   </Button>
                 </Upload>
