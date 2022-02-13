@@ -65,7 +65,7 @@ const Header = ({ siteTitle, showApplyNow, ...props }) => {
               {siteTitle}
             </Link>
           </Typography>
-          {showApplyNow && (
+          {showApplyNow && !matches && (
             <Button
               color="secondary"
               sx={{ color: "white" }}

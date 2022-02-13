@@ -9,6 +9,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Alert,
+  AlertTitle,
   Card,
   CardActions,
   CardContent,
@@ -47,6 +48,7 @@ import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { ToWords } from 'to-words'
 import xhr from 'xhr'
+import ContactInfo from "../components/ContactInfo"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import data from "../states"
@@ -431,7 +433,7 @@ const submitForm = async (data) => {
       }
       }, function (err, resp, body) {
         if (err) reject(err)
-        else resolve(resp, body)
+        else resolve(JSON.parse(body))
       })
   })
 }
@@ -445,6 +447,7 @@ const AddressPage = () => {
   const [showErrors, setShowErrors] = React.useState(0)
   const [isFormSubmitted, setFormSubmitted] = React.useState(0)
   const [showSnackAlert, setSnackAlert] = React.useState(false)
+  const [formReferenceId, setFormReferenceId] = React.useState(0);
 
   const {
     trigger,
@@ -477,7 +480,8 @@ const AddressPage = () => {
     if (activeStep === steps.length - 1) {
       if (Object.keys(errors).length === 0) {
         setFormSubmitted(1)
-        submitForm(getValues()).then(() => {
+        submitForm(getValues()).then((data) => {
+          setFormReferenceId(data.formSubmitId)
           setFormSubmitted(2);
         }).catch(err => {
           console.log(err);
@@ -486,7 +490,7 @@ const AddressPage = () => {
         })
       }
     } else setActiveStep(prevActiveStep => prevActiveStep + 1)
-  }, [trigger, errors, setActiveStep, activeStep, getValues])
+  }, [trigger, errors, setActiveStep, activeStep, getValues, setFormReferenceId, setFormSubmitted])
 
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1)
@@ -846,22 +850,29 @@ const AddressPage = () => {
       <Seo title="Admission Form" />
       <Box sx={{ mt: 2 }}>
         {isFormSubmitted === 2 ? (<>
-          <Typography variant="h5">Form submitted successfully!</Typography>
-          <Box sx={{ mt: 4 }}>
-            <Button sx={{mr:1}} variant="outlined" onClick={() => {
+          <Box sx={{ mt: 4, mb: 2 }}>
+            <Button size="small" sx={{mr:1}} variant="outlined" onClick={() => {
               reset();
               setActiveStep(0);
               setFormSubmitted(false)
             }}>
               Submit Another Form
             </Button>
-            <Button variant="outlined" onClick={() => {
+            <Button size="small" variant="text" onClick={() => {
               navigate('/')
             }}>
               GO TO HOME
             </Button>
           </Box>
-          </>
+          <Alert severity="success" sx={{ width: '100%' }}>
+            <AlertTitle>Form submitted successfully!</AlertTitle>
+            Reference Id : <strong>#{formReferenceId}</strong>
+          </Alert>
+          <Alert severity="info" sx={{ mt: 2, width: '100%' }}>
+            Please vist driving school to get your class schedules
+          </Alert>
+          <ContactInfo/>
+        </>
         ):(
         <>
           <Typography variant="h5">Admission form</Typography>
