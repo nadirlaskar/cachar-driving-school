@@ -314,7 +314,7 @@ const CourseList = ({ list, onSelect = () => { }, selectedCourse, showPaymentMod
             </Typography>
             {showPaymentModes && (
               <Box flexDirection={'row'}>
-                <Link href={`upi://pay?pa=nadirlaskar@icici&amp;pn=Cachar Driving School&amp;am=${price.replace(/[^.\d]/g, '')}&amp;cu=INR`}>
+                <Link href={`upi://pay?pa=nadirlaskar@icici&amp;pn=CDS&amp;am=${price.replace(/[^.\d]/g, '')}&amp;cu=INR`}>
                   <Typography sx={{my:1}} variant="caption" component={"div"} color="primary">
                    Pay using UPI (works on phone)
                   </Typography>
