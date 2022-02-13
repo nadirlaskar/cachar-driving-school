@@ -11,6 +11,7 @@
     "@mui/lab": "5.0.0-alpha.66",
     "@mui/material": "5.3.1",
     "classnames": "2.3.1",
+    "copy-to-clipboard": "^3.3.1",
     "gatsby": "^4.5.4",
     "gatsby-plugin-gatsby-cloud": "^4.5.2",
     "gatsby-plugin-image": "^2.5.2",
@@ -21,22 +22,28 @@
     "gatsby-source-filesystem": "^4.5.2",
     "gatsby-theme-material-ui": "5.1.0",
     "gatsby-transformer-sharp": "^4.5.0",
+    "handlebars": "^4.7.7",
+    "nodemailer": "^6.7.2",
     "prop-types": "^15.8.0",
     "rc-upload": "4.3.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-helmet": "^6.1.0",
-    "react-hook-form": "7.27.0"
+    "react-hook-form": "7.27.0",
+    "to-words": "^3.1.0",
+    "xhr": "^2.6.0"
   },
   "devDependencies": {
     "gh-pages": "^3.2.3",
     "prettier": "^2.5.1"
   },
-  "keywords": ["gatsby"],
+  "keywords": [
+    "gatsby"
+  ],
   "license": "0BSD",
   "scripts": {
     "build": "gatsby build",
-    "develop": "gatsby develop",
+    "develop": "gatsby develop -H 0.0.0.0",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "start": "gatsby develop",
     "serve": "gatsby serve",

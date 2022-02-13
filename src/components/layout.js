@@ -5,18 +5,18 @@
  * See: https://www.gatsbyjs.com/docs/use-static-query/
  */
 
-import * as React from "react"
-import PropTypes from "prop-types"
-import { useStaticQuery, graphql } from "gatsby"
-
-import Header from "./header"
-import "./layout.css"
-import theme from "../theme"
-import ThemeTopLayout from "gatsby-theme-material-ui-top-layout/src/components/top-layout"
-
+import { Toolbar } from "@mui/material"
 import Box from "@mui/material/Box"
 import Container from "@mui/material/Container"
-import { Toolbar } from "@mui/material"
+import { graphql, useStaticQuery } from "gatsby"
+import ThemeTopLayout from "gatsby-theme-material-ui-top-layout/src/components/top-layout"
+import PropTypes from "prop-types"
+import * as React from "react"
+import theme from "../theme"
+import Header from "./header"
+import "./layout.css"
+
+
 
 const Layout = ({ showApplyNow, ...props }) => {
   const data = useStaticQuery(graphql`
@@ -51,17 +51,7 @@ const Layout = ({ showApplyNow, ...props }) => {
               color: "grey"
             }}
           >
-            © Cachar driving school{" | "}
-            {new Date().getFullYear()}
-            <a
-              style={{
-                color: "grey",
-                textDecoration: "none"
-              }}
-              href="upi://pay?pa=samplevpa@ybl"
-            >
-              {" | "}(site author)
-            </a>
+            Cachar driving school © {new Date().getFullYear()}, All Rights Reserved.
           </div>
         </footer>
       </Container>

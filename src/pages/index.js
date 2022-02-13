@@ -1,8 +1,9 @@
+import { Box, Button, Typography } from "@mui/material"
+import { navigate } from "gatsby"
 import * as React from "react"
-
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { Box, Button, Typography } from "@mui/material"
+
 
 const IndexPage = () => (
   <Layout showApplyNow={true}>
@@ -13,7 +14,7 @@ const IndexPage = () => (
     <div>
       <Typography variant="subtitle1" component="div" gutterBottom>
         Book your seats
-        <Button size="small" sx={{ m: 1 }} variant="outlined">
+        <Button size="small" sx={{ m: 1 }} variant="outlined" onClick={()=>navigate("/admission")}>
           Register now
         </Button>
       </Typography>

@@ -1,9 +1,9 @@
-import * as React from "react"
-import Box from "@mui/material/Box"
-import TextField from "@mui/material/TextField"
-import Layout from "../components/layout"
-import Seo from "../components/seo"
-import { Controller, useForm } from "react-hook-form"
+import { CopyAll, Delete, UploadFile } from "@mui/icons-material"
+import CloseIcon from '@mui/icons-material/Close'
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
+import AdapterDateFns from "@mui/lab/AdapterDateFns"
+import DatePicker from "@mui/lab/DatePicker"
+import LocalizationProvider from "@mui/lab/LocalizationProvider"
 import {
   Accordion,
   AccordionDetails,
@@ -12,32 +12,41 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  Chip,
-  List,
+  Chip, DialogContent, DialogContentText, Link, List,
   ListItem,
   ListItemText,
-  Typography
+  Typography,
+  useMediaQuery
 } from "@mui/material"
+import AppBar from '@mui/material/AppBar'
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Dialog from '@mui/material/Dialog'
+import FormControl from "@mui/material/FormControl"
+import IconButton from '@mui/material/IconButton'
 import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
-import FormControl from "@mui/material/FormControl"
-import Select from "@mui/material/Select"
-import AdapterDateFns from "@mui/lab/AdapterDateFns"
-import LocalizationProvider from "@mui/lab/LocalizationProvider"
-import DatePicker from "@mui/lab/DatePicker"
-import Stepper from "@mui/material/Stepper"
-import Step from "@mui/material/Step"
-import StepLabel from "@mui/material/StepLabel"
-import StepContent from "@mui/material/StepContent"
-import Button from "@mui/material/Button"
-import Stack from "@mui/material/Stack"
 import Paper from "@mui/material/Paper"
+import Select from "@mui/material/Select"
+import Slide from '@mui/material/Slide'
+import Stack from "@mui/material/Stack"
+import Step from "@mui/material/Step"
+import StepContent from "@mui/material/StepContent"
+import StepLabel from "@mui/material/StepLabel"
+import Stepper from "@mui/material/Stepper"
 import { styled } from "@mui/material/styles"
+import TextField from "@mui/material/TextField"
+import Toolbar from '@mui/material/Toolbar'
 import classNames from "classnames"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
-import data from "../states"
+import copy from 'copy-to-clipboard'
 import Upload from "rc-upload"
-import { Delete, UploadFile } from "@mui/icons-material"
+import * as React from "react"
+import { Controller, useForm } from "react-hook-form"
+import { ToWords } from 'to-words'
+import xhr from 'xhr'
+import Layout from "../components/layout"
+import Seo from "../components/seo"
+import data from "../states"
 
 const EDUCATION_QALIFICATION = [
   {
@@ -65,27 +74,6 @@ const STATE = data.states.map(x => ({ name: x.state, value: x.state }))
 const DTO_OFFICE = [{ name: "Cachar", value: "Cachar" }]
 const COURSES = [
   {
-    id: "LMV",
-    title: "LMV Driving Course",
-    subtitle: "Learn to drive light motor vehicals",
-    courseDuration: "45 days",
-    features: [
-      {
-        name: "Simulator",
-        duration: "20mins"
-      },
-      {
-        name: "Practical",
-        duration: "20mins"
-      },
-      {
-        name: "Theory",
-        duration: "20mins"
-      }
-    ],
-    price: "7,500 INR"
-  },
-  {
     id: "HMV",
     title: "HMV Driving Course",
     subtitle: "Learn to drive heavy motor vehicals",
@@ -104,7 +92,28 @@ const COURSES = [
         duration: "20mins"
       }
     ],
-    price: "6,500 INR"
+    price: "7,000 INR"
+  },
+  {
+    id: "LMV",
+    title: "LMV Driving Course",
+    subtitle: "Learn to drive light motor vehicals",
+    courseDuration: "45 days",
+    features: [
+      {
+        name: "Simulator",
+        duration: "20mins"
+      },
+      {
+        name: "Practical",
+        duration: "20mins"
+      },
+      {
+        name: "Theory",
+        duration: "20mins"
+      }
+    ],
+    price: "6,000 INR"
   },
   {
     id: "BIKE",
@@ -125,7 +134,7 @@ const COURSES = [
         duration: "20 mins"
       }
     ],
-    price: "4,500 INR"
+    price: "4,000 INR"
   }
 ]
 const steps = [
@@ -164,7 +173,114 @@ const CourseItem = styled(Paper)(({ theme }) => ({
     borderColor: theme.palette.secondary.main
   }
 }))
-const CourseList = ({ list, onSelect, selectedCourse }) => {
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+const toWords = new ToWords();
+const AlertDialog = ({show, error, onClose}) => {
+  return (
+    <div>
+      <Dialog
+        open={show}
+        onClose={onClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <Typography variant="caption" sx={{mx:2,mt:2}}>
+          {"Please fill required fields"}
+        </Typography>
+        <DialogContent sx={{pt:1}}>
+          <DialogContentText id="alert-dialog-description">
+            <Box flexDirection={"column"} mb={1}>
+              {Object.keys(error).map(key => (
+                <Box sx={{my:1}}>
+                  <Typography variant="caption" color="error">
+                    {key.replace(/[_]/g, ' ').toUpperCase()}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+const BankDetailsDialog = ({ show, handleClose, amountToPay }) => {
+  const matches = useMediaQuery('(max-width:500px)');
+  return (<Dialog
+    fullScreen={matches}
+    open={show}
+    onClose={handleClose}
+    TransitionComponent={Transition}
+  >
+    <AppBar sx={{ position: 'relative' }}>
+      <Toolbar>
+        <IconButton
+          edge="start"
+          color="inherit"
+          onClick={handleClose}
+          aria-label="close"
+        >
+          <CloseIcon />
+        </IconButton>
+        <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+          Bank details
+        </Typography>
+      </Toolbar>
+    </AppBar>
+    <List>
+      <ListItem button>
+        <ListItemText primary="Bank Name" secondary="Punjab National Bank, Arunachal" />
+      </ListItem>
+      <ListItem
+        button
+        secondaryAction={
+          <IconButton edge="end" aria-label="delete">
+            <CopyAll />
+          </IconButton>
+        }
+        onClick={() => copy('0743050013925')}>
+        <ListItemText secondary="Account number" primary="0743050013925" />
+      </ListItem>
+      <ListItem
+        button
+        secondaryAction={
+          <IconButton edge="end" aria-label="delete">
+            <CopyAll />
+          </IconButton>
+        }
+        onClick={() => copy('PUNB0074320')}>
+        <ListItemText
+          secondary="IFSC"
+          primary="PUNB0074320"
+        />
+      </ListItem>
+      <ListItem
+        secondaryAction={
+          <IconButton edge="end" aria-label="delete">
+            <CopyAll />
+          </IconButton>
+        }
+        button
+        onClick={() => copy(amountToPay.replace(/[^.\d]/g, ''))}>
+        <ListItemText
+          primary={amountToPay}
+          secondary={toWords.convert(Number(amountToPay.replace(/[^.\d]/g, '')), { currency: true })}
+        />
+      </ListItem>
+    </List>
+    <Typography sx={{mb:2, mx: 2}}variant="subtitle2">NOTE: Please deposit money and upload payment reciept</Typography>
+  </Dialog>)
+}
+const CourseList = ({ list, onSelect = () => { }, selectedCourse, showPaymentModes }) => {
+  const [open, setOpen] = React.useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
     <Stack direction="row" spacing={2}>
       {list.map(({ title, id, subtitle, features, courseDuration, price }) => (
@@ -187,12 +303,27 @@ const CourseList = ({ list, onSelect, selectedCourse }) => {
           <CardContent sx={{ py: 0 }}>
             <Typography variant="caption">Fees &nbsp;</Typography>
             <Typography
-              sx={{ display: "inline-block", mb: 2, fontWeight: 600 }}
+              sx={{ display: "inline-block", fontWeight: 600 }}
               color="primary"
             >
               {price}
             </Typography>
-            <Accordion sx={{ mb: 2 }} disableGutters>
+            {showPaymentModes && (
+              <Box flexDirection={'row'}>
+                <Link href={`upi://pay?pa=nadirlaskarD@icici&amp;pn=Cachar Driving School&amp;am=${price.replace(/[^.\d]/g, '')}&amp;cu=INR`}>
+                  <Typography sx={{my:1}} variant="caption" component={"div"} color="primary">
+                   Pay using UPI (works on phone)
+                  </Typography>
+                </Link>
+                <Link href="#" onClick={handleClickOpen}>
+                  <Typography variant="caption" component={"div"}>
+                    Show bank details
+                  </Typography>
+                </Link>
+              </Box>
+            )}
+            <BankDetailsDialog show={open} handleClose={handleClose} amountToPay={price}/>
+            <Accordion sx={{ my: 2 }} disableGutters>
               <AccordionSummary
                 sx={{ flexDirection: "row" }}
                 expandIcon={<ExpandMoreIcon />}
@@ -241,7 +372,7 @@ const stepFields = [
     "mobile",
     "father_or_spouse_name",
     "present_address",
-    "prmanent_address",
+    "permanent_address",
     "state",
     "district",
     "dto_office"
@@ -252,7 +383,53 @@ const stepFields = [
 const checkError = (errors, index) => {
   return stepFields[index].filter(key => Boolean(errors[key])).length > 0
 }
-const submitForm = console.log
+
+function getBase64(file){
+    var reader = new FileReader();
+    return new Promise((resolve, reject) => {
+        reader.onerror = () => {
+            reader.abort();
+            reject(new DOMException("Problem parsing input file."));
+        };
+        reader.onload = () => {
+            resolve(reader.result.split(',').pop());
+        };
+        reader.readAsDataURL(file);
+    });
+  }
+const submitForm = async (data) => {
+  const { address_proof, id_proof, payment_receipt, ...rest } = data;
+  const formData = {
+    ...rest,
+    address_proof: {
+      ext: address_proof.name.split('.').pop(),
+      content: await getBase64(address_proof)
+    },
+    id_proof: {
+      ext: id_proof.name.split('.').pop(),
+      content: await getBase64(id_proof)
+    },
+    payment_receipt: {
+      ext: payment_receipt.name.split('.').pop(),
+      content: await getBase64(payment_receipt),
+    } 
+      
+  }
+  console.log(formData);
+  return new Promise((resolve, reject) => { 
+    xhr({
+      method: "post",
+      body: JSON.stringify(formData),
+      uri: "https://us-central1-cachar-driving-school.cloudfunctions.net/submitDrivingApplicationForm",
+      headers: {
+          "Content-Type": "application/json"
+      }
+      }, function (err, resp, body) {
+        if (err) reject(err)
+        else resolve(resp, body)
+      })
+  })
+}
 const filetypes = "image/jpeg,image/gif,image/png,application/pdf"
 const AddressPage = () => {
   let eighteenYearsAgo = new Date()
@@ -260,9 +437,13 @@ const AddressPage = () => {
     eighteenYearsAgo.getFullYear() - 18
   )
   const [activeStep, setActiveStep] = React.useState(0)
+  const [showErrors, setShowErrors] = React.useState(0)
+  const [isFormSubmitted, setFormSubmitted] = React.useState(0)
+
   const {
     trigger,
     watch,
+    reset,
     control,
     setValue,
     getValues,
@@ -286,8 +467,11 @@ const AddressPage = () => {
 
   const handleNext = React.useCallback(() => {
     trigger(stepFields[activeStep])
+    setShowErrors(Object.keys(errors).length !== 0)
     if (activeStep === steps.length - 1) {
-      if (Object.keys(errors).length === 0) submitForm(getValues())
+      if (Object.keys(errors).length === 0) submitForm(getValues()).then(() => { 
+        setFormSubmitted(true);
+      })
     } else setActiveStep(prevActiveStep => prevActiveStep + 1)
   }, [trigger, errors, setActiveStep, activeStep, getValues])
 
@@ -581,11 +765,62 @@ const AddressPage = () => {
       </Box>
     ),
     payment: (
-      <Box>
+      <Box flexDirection={"column"}>
+        <Typography sx={{mb:1}} variant="subtitle1">You have selected below course</Typography>
         <CourseList
+          showPaymentModes={true}
           list={COURSES.filter(x => x.id === course)}
           selectedCourse={course}
         />
+        <Box mt={1} display="flex">
+          <Controller
+            name="payment_receipt"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) =>
+              field.value ? (
+                <Card>
+                  <CardHeader
+                    sx={{ py: 0 }}
+                    title="Payment Receipt"
+                    titleTypographyProps={{ variant: "overline" }}
+                  />
+                  <CardContent sx={{ py: 1 }}>
+                    <Typography variant="caption">
+                      {field.value.name}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      startIcon={<Delete />}
+                      type="text"
+                      size="small"
+                      fullWidth
+                      color="error"
+                      onClick={() => {
+                        setValue("payment_receipt", undefined, {
+                          shouldValidate: true
+                        })
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </CardActions>
+                </Card>
+              ) : (
+                <Upload type="drag" onStart={field.onChange} accept={filetypes}>
+                  <Button
+                    startIcon={<UploadFile />}
+                    variant="contained"
+                    component="span"
+                  >
+                    Upload Payment Receipt
+                  </Button>
+                </Upload>
+              )
+            }
+          />
+        </Box>
       </Box>
     )
   }
@@ -593,63 +828,87 @@ const AddressPage = () => {
   return (
     <Layout>
       <Seo title="Admission Form" />
-      <Typography variant="h5">Admission form</Typography>
-      <Typography variant="caption">
-        Fill up the following details to book your slot
-      </Typography>
-      <Box></Box>
       <Box sx={{ mt: 2 }}>
-        <Stepper activeStep={activeStep} orientation="vertical">
-          {steps.map((step, index) => (
-            <Step key={step.label}>
-              <StepLabel error={checkError(errors, index)}>
-                {step.label}
-                <Typography
-                  component="div"
-                  variant="caption"
-                  sx={{ color: "text.secondary" }}
-                >
-                  {step.description}
-                </Typography>
-              </StepLabel>
-              <StepContent>
-                <Box
-                  component="form"
-                  sx={{
-                    my: 2,
-                    "& > :not(style)": {
+        {isFormSubmitted ? (<>
+          <Typography variant="h5">Form submitted successfully!</Typography>
+          <Box sx={{ mt: 4 }}>
+            <Button sx={{mr:1}} variant="outlined" onClick={() => {
+              reset();
+              setActiveStep(0);
+              setFormSubmitted(false)
+            }}>
+              Submit Another Form
+            </Button>
+            <Button variant="outlined" onClick={() => {
+              reset();
+              setFormSubmitted(false)
+            }}>
+              GO TO HOME
+            </Button>
+          </Box>
+          </>
+        ):(
+        <>
+          <Typography variant="h5">Admission form</Typography>
+          <Typography variant="caption">
+            Fill up the following details to book your slot
+          </Typography>
+          <Box></Box>
+          <Stepper activeStep={activeStep} orientation="vertical">
+            {steps.map((step, index) => (
+              <Step key={step.label}>
+                <StepLabel error={checkError(errors, index)} onClick={()=>setActiveStep(index)}>
+                  {step.label}
+                  <Typography
+                    component="div"
+                    variant="caption"
+                    sx={{ color: "text.secondary" }}
+                  >
+                    {step.description}
+                  </Typography>
+                </StepLabel>
+                <StepContent>
+                  <Box
+                    component="form"
+                    sx={{
                       my: 2,
-                      width: "50ch",
-                      display: "flex"
-                    }
-                  }}
-                  noValidate
-                  autoComplete="off"
-                >
-                  {STEPPER[step.id]}
-                  <div>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={handleNext}
-                      sx={{ mt: 1, mr: 1 }}
-                    >
-                      {index === steps.length - 1 ? "Finish" : "Continue"}
-                    </Button>
-                    <Button
-                      size="small"
-                      disabled={index === 0}
-                      onClick={handleBack}
-                      sx={{ mt: 1, mr: 1 }}
-                    >
-                      Back
-                    </Button>
-                  </div>
-                </Box>
-              </StepContent>
-            </Step>
-          ))}
-        </Stepper>
+                      "& > :not(style)": {
+                        my: 2,
+                        width: "50ch",
+                        display: "flex"
+                      }
+                    }}
+                    noValidate
+                    autoComplete="off"
+                  >
+                    {STEPPER[step.id]}
+                    <div>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={handleNext}
+                        sx={{ mt: 1, mr: 1 }}
+                      >
+                        {index === steps.length - 1 ? "Finish" : "Continue"}
+                      </Button>
+                      <Button
+                        size="small"
+                        disabled={index === 0}
+                        onClick={handleBack}
+                        sx={{ mt: 1, mr: 1 }}
+                      >
+                        Back
+                      </Button>
+                    </div>
+                  </Box>
+                </StepContent>
+              </Step>
+            ))}
+          </Stepper>
+          <AlertDialog show={showErrors} error={errors} onClose={()=>setShowErrors(false)}/>
+        </>
+    )
+}
       </Box>
     </Layout>
   )
