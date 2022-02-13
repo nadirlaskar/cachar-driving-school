@@ -1,13 +1,14 @@
-import * as React from "react"
-import PropTypes from "prop-types"
-import { Link, navigate } from "gatsby"
+import { useMediaQuery } from "@mui/material"
 import AppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
-import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import IconButton from "@mui/material/IconButton"
-
+import Toolbar from "@mui/material/Toolbar"
+import Typography from "@mui/material/Typography"
 import useScrollTrigger from "@mui/material/useScrollTrigger"
+import { Link, navigate } from "gatsby"
+import PropTypes from "prop-types"
+import * as React from "react"
+
 
 function ElevationScroll(props) {
   const { children, window } = props
@@ -35,13 +36,14 @@ ElevationScroll.propTypes = {
 }
 
 const Header = ({ siteTitle, showApplyNow, ...props }) => {
+  const matches = useMediaQuery('(max-width:500px)');
   const handleApply = React.useCallback(() => {
     navigate("/admission")
   }, [])
   return (
     <ElevationScroll {...props}>
       <AppBar>
-        <Toolbar>
+        <Toolbar disableGutters={matches}>
           <IconButton sx={{ p: 1 }}>
             <img
               style={{

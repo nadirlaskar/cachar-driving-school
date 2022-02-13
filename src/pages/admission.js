@@ -8,6 +8,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
   Card,
   CardActions,
   CardContent,
@@ -15,6 +16,7 @@ import {
   Chip, CircularProgress, DialogContent, DialogContentText, Link, List,
   ListItem,
   ListItemText,
+  Snackbar,
   Typography,
   useMediaQuery
 } from "@mui/material"
@@ -164,7 +166,7 @@ const steps = [
 const CourseItem = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   color: theme.palette.text.secondary,
-  maxWidth: 400,
+  maxWidth: "100%",
   borderWidth: 2,
   "&:hover,&.selected": {
     borderColor: theme.palette.primary.main,
@@ -276,6 +278,7 @@ const BankDetailsDialog = ({ show, handleClose, amountToPay }) => {
 }
 const CourseList = ({ list, onSelect = () => { }, selectedCourse, showPaymentModes }) => {
   const [open, setOpen] = React.useState(false);
+  const matches = useMediaQuery('(max-width:500px)');
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -283,7 +286,7 @@ const CourseList = ({ list, onSelect = () => { }, selectedCourse, showPaymentMod
     setOpen(false);
   };
   return (
-    <Stack direction="row" spacing={2}>
+    <Stack direction={matches ? "column" : "row"} spacing={2}>
       {list.map(({ title, id, subtitle, features, courseDuration, price }) => (
         <CourseItem
           key={id}
@@ -440,6 +443,7 @@ const AddressPage = () => {
   const [activeStep, setActiveStep] = React.useState(0)
   const [showErrors, setShowErrors] = React.useState(0)
   const [isFormSubmitted, setFormSubmitted] = React.useState(0)
+  const [showSnackAlert, setSnackAlert] = React.useState(false)
 
   const {
     trigger,
@@ -467,13 +471,19 @@ const AddressPage = () => {
   }))
 
   const handleNext = React.useCallback(() => {
-    trigger(stepFields[activeStep])
+    trigger(stepFields.slice(0,activeStep+1).flat())
     setShowErrors(Object.keys(errors).length !== 0)
     if (activeStep === steps.length - 1) {
-      setFormSubmitted(1)
-      if (Object.keys(errors).length === 0) submitForm(getValues()).then(() => { 
-        setFormSubmitted(2);
-      })
+      if (Object.keys(errors).length === 0) {
+        setFormSubmitted(1)
+        submitForm(getValues()).then(() => {
+          setFormSubmitted(2);
+        }).catch(err => {
+          console.log(err);
+          setSnackAlert('Something went wrong!');
+          setFormSubmitted(0)
+        })
+      }
     } else setActiveStep(prevActiveStep => prevActiveStep + 1)
   }, [trigger, errors, setActiveStep, activeStep, getValues])
 
@@ -861,7 +871,7 @@ const AddressPage = () => {
           <Stepper activeStep={activeStep} orientation="vertical">
             {steps.map((step, index) => (
               <Step key={step.label}>
-                <StepLabel error={checkError(errors, index)} onClick={()=>setActiveStep(index)}>
+                <StepLabel error={checkError(errors, index)} onClick={()=> isFormSubmitted===0&&setActiveStep(index)}>
                   {step.label}
                   <Typography
                     component="div"
@@ -879,6 +889,7 @@ const AddressPage = () => {
                       "& > :not(style)": {
                         my: 2,
                         width: "50ch",
+                        maxWidth: "100%",
                         display: "flex"
                       }
                     }}
@@ -911,7 +922,21 @@ const AddressPage = () => {
               </Step>
             ))}
           </Stepper>
-          <AlertDialog show={showErrors} error={errors} onClose={()=>setShowErrors(false)}/>
+          
+          <AlertDialog show={showErrors} error={errors} onClose={() => setShowErrors(false)} />
+              <Snackbar
+                open={Boolean(showSnackAlert)}
+                autoHideDuration={6000}
+                onClose={() => { setSnackAlert(false) }}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center'
+                }}
+              >
+              <Alert  severity="error" sx={{ width: '100%' }}>
+                {showSnackAlert}
+              </Alert>
+          </Snackbar>
         </>
     )
 }
