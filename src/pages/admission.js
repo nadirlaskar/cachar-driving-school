@@ -12,7 +12,7 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  Chip, DialogContent, DialogContentText, Link, List,
+  Chip, CircularProgress, DialogContent, DialogContentText, Link, List,
   ListItem,
   ListItemText,
   Typography,
@@ -39,6 +39,7 @@ import TextField from "@mui/material/TextField"
 import Toolbar from '@mui/material/Toolbar'
 import classNames from "classnames"
 import copy from 'copy-to-clipboard'
+import { navigate } from "gatsby"
 import Upload from "rc-upload"
 import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -469,8 +470,9 @@ const AddressPage = () => {
     trigger(stepFields[activeStep])
     setShowErrors(Object.keys(errors).length !== 0)
     if (activeStep === steps.length - 1) {
+      setFormSubmitted(1)
       if (Object.keys(errors).length === 0) submitForm(getValues()).then(() => { 
-        setFormSubmitted(true);
+        setFormSubmitted(2);
       })
     } else setActiveStep(prevActiveStep => prevActiveStep + 1)
   }, [trigger, errors, setActiveStep, activeStep, getValues])
@@ -663,8 +665,8 @@ const AddressPage = () => {
       </>
     ),
     documents: (
-      <Box>
-        <Box m={1}>
+      <Box mb={1}>
+        <Box mr={1}>
           <Controller
             name="id_proof"
             control={control}
@@ -713,7 +715,7 @@ const AddressPage = () => {
             }
           />
         </Box>
-        <Box m={1}>
+        <Box>
           <Controller
             name="address_proof"
             control={control}
@@ -832,7 +834,7 @@ const AddressPage = () => {
     <Layout>
       <Seo title="Admission Form" />
       <Box sx={{ mt: 2 }}>
-        {isFormSubmitted ? (<>
+        {isFormSubmitted === 2 ? (<>
           <Typography variant="h5">Form submitted successfully!</Typography>
           <Box sx={{ mt: 4 }}>
             <Button sx={{mr:1}} variant="outlined" onClick={() => {
@@ -843,8 +845,7 @@ const AddressPage = () => {
               Submit Another Form
             </Button>
             <Button variant="outlined" onClick={() => {
-              reset();
-              setFormSubmitted(false)
+              navigate('/')
             }}>
               GO TO HOME
             </Button>
@@ -889,14 +890,16 @@ const AddressPage = () => {
                       <Button
                         variant="outlined"
                         size="small"
+                        disabled={isFormSubmitted!==0}
                         onClick={handleNext}
+                        startIcon={isFormSubmitted === 1 && <CircularProgress size={15}/>}
                         sx={{ mt: 1, mr: 1 }}
                       >
                         {index === steps.length - 1 ? "Finish" : "Continue"}
                       </Button>
                       <Button
                         size="small"
-                        disabled={index === 0}
+                        disabled={index === 0 || isFormSubmitted!==0}
                         onClick={handleBack}
                         sx={{ mt: 1, mr: 1 }}
                       >
