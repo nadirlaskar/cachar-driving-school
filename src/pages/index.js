@@ -29,16 +29,25 @@ const IndexPage = () => (
           loading="lazy"
         />
       </Box>
+      
+      {"Contact us : "}
       <a
         style={{
           fontSize: 14,
           color: "grey",
           textDecoration: "none"
         }}
-        href="tel:+911234567890"
-      >
-        {"Contact us : "} +91 1234567890
-      </a>
+        href="tel:+917035712308"
+      >+91 7035712308</a>
+      {" | "}
+      <a
+        style={{
+          fontSize: 14,
+          color: "grey",
+          textDecoration: "none"
+        }}
+        href="tel:+91 9957504758"
+      >+91 9957504758</a>
       <p
         style={{
           lineHeight: "16px",
