@@ -26,15 +26,6 @@ const ContactInfo = () => {
           }}
           href="tel:+917035712308"
         >+91 7035712308</a>
-        <Typography sx={{color: "grey"}} variant="caption">{" | "}</Typography>
-        <a
-          style={{
-            fontSize: 14,
-            color: "grey",
-            textDecoration: "none"
-          }}
-          href="tel:+91 9957504758"
-        >+91 9957504758</a>
         <p
           style={{
             lineHeight: "16px",
