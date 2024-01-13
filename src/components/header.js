@@ -51,7 +51,7 @@ const Header = ({ siteTitle, showApplyNow, ...props }) => {
                 margin: 0
               }}
               alt="Cachar driving school logo"
-              src="../../logo.png"
+              src={process.env.PUBLIC_URL+"logo.png"}
             />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

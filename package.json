@@ -4,6 +4,7 @@
   "description": "A simple starter to get up and developing quickly with Gatsby",
   "version": "0.1.0",
   "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "homepage": "http://nadirlaskar.github.io/cachar-driving-school",
   "dependencies": {
     "@emotion/react": "11.7.1",
     "@emotion/styled": "11.6.0",
@@ -34,7 +35,7 @@
     "xhr": "^2.6.0"
   },
   "devDependencies": {
-    "gh-pages": "^3.2.3",
+    "gh-pages": "^6.1.1",
     "prettier": "^2.5.1"
   },
   "keywords": [
@@ -44,6 +45,8 @@
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop -H 0.0.0.0",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d public",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "start": "gatsby develop",
     "serve": "gatsby serve",
