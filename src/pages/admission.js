@@ -97,7 +97,7 @@ const COURSES = [
         duration: "20mins"
       }
     ],
-    price: "7,000 INR"
+    price: "12,000 INR"
   },
   {
     id: "LMV",
@@ -118,7 +118,7 @@ const COURSES = [
         duration: "20mins"
       }
     ],
-    price: "6,000 INR"
+    price: "7,000 INR"
   },
   {
     id: "BIKE",
@@ -139,7 +139,7 @@ const COURSES = [
         duration: "20 mins"
       }
     ],
-    price: "4,000 INR"
+    price: "5,000 INR"
   }
 ]
 const steps = [
