@@ -51,9 +51,6 @@ module.exports = {
         // Defaults to null
         defaultDataLayer: { platform: "gatsby" },
   
-        // Specify optional GTM environment details.
-        gtmAuth: process.env.YOUR_GOOGLE_TAGMANAGER_ENVIRONMENT_AUTH_STRING,
-        gtmPreview: process.env.YOUR_GOOGLE_TAGMANAGER_ENVIRONMENT_PREVIEW_NAME,
         dataLayerName: "dataLayer",
         // Defaults to false
         enableWebVitalsTracking: true,
